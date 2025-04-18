@@ -14,6 +14,7 @@ class ProblemState:
         self.next_id = next_id
         self.include_set = include_set
 
+
 class Solver:
     def __init__(self):
         self.N = 0          # Number of star systems (nodes)
@@ -22,9 +23,6 @@ class Solver:
         self.best = None    # Best (minimum) toll station count found so far
         self.Load()
 
-    def clone(self, state):
-        # Create new instance with copied values -- more efficient than deepcopy
-        return ProblemState(state.next_id, set(state.include_set))
 
     def Load(self):
         self.N, self.M = map(int, input().split(" ")) # Read verts and edges
@@ -62,7 +60,7 @@ class Solver:
         cur_system = initial_state.next_id
 
         # Try including the current system under consideration
-        inc_state = self.clone(initial_state)
+        inc_state = copy.deepcopy(initial_state)
         inc_state.next_id += 1
         self.IncludeSystem(inc_state, cur_system)
         self.Branch(inc_state)
@@ -101,7 +99,7 @@ class Solver:
         
         # We now recursively branch into two cases:
         # Case 1: Include the current system (place a toll station here)
-        inc_state = self.clone(state)                # Make a deep copy so changes don't affect other branches
+        inc_state = copy.deepcopy(state)                # Make a deep copy so changes don't affect other branches
         self.IncludeSystem(inc_state, cur_system)       # Add the system to the toll station set
         inc_state.next_id += 1                          # Move to the next system
         best_inc = self.Branch(inc_state)                          # Recursively explore with this inclusion
