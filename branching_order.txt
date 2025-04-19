@@ -1,0 +1,18 @@
+Command to benchmark excluding/including first 
+
+hyperfine --runs 10 --warmup 3 'python3 include_first.py < complete20.txt' 'python3 exclude_first.py < complete20.txt'
+
+Benchmarking Results
+Benchmark 1: python3 include_first.py < complete20.txt
+  Time (mean ± σ):      7.855 s ±  1.637 s    [User: 7.849 s, System: 0.006 s]
+  Range (min … max):    6.862 s … 11.740 s    10 runs
+
+Warning: Statistical outliers were detected. Consider re-running this benchmark on a quiet system without any interferences from other programs. It might help to use the '--warmup' or '--prepare' options.
+
+Benchmark 2: python3 exclude_first.py < complete20.txt
+  Time (mean ± σ):      3.400 s ±  0.199 s    [User: 3.397 s, System: 0.003 s]
+  Range (min … max):    3.156 s …  3.887 s    10 runs
+
+Summary
+  python3 exclude_first.py < complete20.txt ran
+    2.31 ± 0.50 times faster than python3 include_first.py < complete20.txt

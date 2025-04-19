@@ -96,17 +96,17 @@ class Solver:
         cur_system = state.next_id
 
 
-# (Back Tracking)
+        # Try excluding the current system under consideration (Polynomial time optimization)  #FIXME add comments
+        state.next_id += 1
+        best_exc = self.Branch(state)                    
+    
         # Try including the current system under consideration
-        inc_state = self.clone(state)
+        inc_state = self.clone(state)                               # Polynomial time optimization) FIXME add comments          
         self.IncludeSystem(inc_state, cur_system)
         inc_state.next_id += 1
-        best_inc = self.Branch(inc_state)            
-
-        # Try excluding the current system under consideration
-        state.next_id += 1
-        best_exc = self.Branch(state)
-        return min(best_inc, best_exc)
+        best_inc = self.Branch(inc_state)
+        
+        return min(best_inc, best_exc)  # (Backtracking) #FIXME add comments
 
 
 if __name__ == "__main__":
@@ -124,3 +124,12 @@ if __name__ == "__main__":
     
 # python3 main.py < input.txt
 # snakeviz profile_output.prof
+
+# Requried tasks:
+# Added backtracking
+# Added bounding
+# Profile code
+
+# Polynomial time optimization: Changed deepcopy to clone
+# Polynomial time optimization: Changed the order of excluding first and then including
+#

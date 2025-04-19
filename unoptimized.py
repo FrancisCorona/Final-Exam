@@ -124,7 +124,7 @@ if __name__ == "__main__":
     print(result)
     
     profiler.disable()
-    profiler.dump_stats("profile_output.prof")  # Save stats for SnakeViz
+    profiler.dump_stats("unoptimized.prof")  # Save stats for SnakeViz
     
 # python3 main.py < input.txt
 # snakeviz profile_output.prof
