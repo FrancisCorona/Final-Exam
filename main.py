@@ -97,19 +97,13 @@ class Solver:
 
 
 # (Back Tracking)
-        # Try including the current system under consideration *
-        
-        # We now recursively branch into two cases:
-        # Case 1: Include the current system (place a toll station here)
+        # Try including the current system under consideration
         inc_state = self.clone(state)                # Make a deep copy so changes don't affect other branches
-        self.IncludeSystem(inc_state, cur_system)       # Add the system to the toll station set
-        inc_state.next_id += 1                          # Move to the next system
-        best_inc = self.Branch(inc_state)                          # Recursively explore with this inclusion
+        self.IncludeSystem(inc_state, cur_system)    # Add the system to the toll station set
+        inc_state.next_id += 1                       # Move to the next system
+        best_inc = self.Branch(inc_state)            # Recursively explore with this inclusion
 
-        # Try excluding the current system under consideration *
-        
-        # Case 2: Exclude the current system (hope a neighbor covers all edges)
-        # This assumes future or existing toll stations may cover this system's edges
+        # Try excluding the current system under consideration
         state.next_id += 1
         best_exc = self.Branch(state)
         return min(best_inc, best_exc)
