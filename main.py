@@ -98,10 +98,10 @@ class Solver:
 
 # (Back Tracking)
         # Try including the current system under consideration
-        inc_state = self.clone(state)                # Make a deep copy so changes don't affect other branches
-        self.IncludeSystem(inc_state, cur_system)    # Add the system to the toll station set
-        inc_state.next_id += 1                       # Move to the next system
-        best_inc = self.Branch(inc_state)            # Recursively explore with this inclusion
+        inc_state = self.clone(state)
+        self.IncludeSystem(inc_state, cur_system)
+        inc_state.next_id += 1
+        best_inc = self.Branch(inc_state)            
 
         # Try excluding the current system under consideration
         state.next_id += 1
