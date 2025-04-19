@@ -1,3 +1,4 @@
+import copy
 import cProfile
 
 '''
@@ -52,78 +53,26 @@ class Solver:
 
     def IncludeSystem(self, state: ProblemState, system_id: int): # Adds a toll station to the given system in the state.
         state.include_set.add(system_id)
-    
-    def GreedyPreprocess(self):
-        mustHaveStations = set()
-        
-        # First identify nodes with highest degree (most connections)
-        # These are often good candidates for toll stations
-        nodes_by_degree = sorted(range(self.N), key=lambda x: len(self.graph[x]), reverse=True)
-        
-        # Process leaf nodes first (must be covered by their only neighbor)
-        for system_id in range(self.N):
-            if len(self.graph[system_id]) == 1:
-                neighbor = next(iter(self.graph[system_id]))
-                mustHaveStations.add(neighbor)
-        
-        # Add high-degree nodes that would cover many uncovered edges
-        covered_edges = set()
-        for node in nodes_by_degree:
-            if node in mustHaveStations:
-                continue
-                
-            # Count how many new edges this node would cover
-            new_edges = 0
-            for neighbor in self.graph[node]:
-                edge = tuple(sorted([node, neighbor]))
-                if edge not in covered_edges:
-                    new_edges += 1
-                    
-            # If this node covers many new edges, add it
-            if new_edges > 2:  # Threshold can be adjusted
-                mustHaveStations.add(node)
-                # Mark all edges from this node as covered
-                for neighbor in self.graph[node]:
-                    covered_edges.add(tuple(sorted([node, neighbor])))
-        
-        return mustHaveStations
-         
+
     # Entry point to running the solver
     def Solve(self):
-        # Greedy Preprocess to find must-have stations
-        mustHaveStations = self.GreedyPreprocess()
+        # Build initial problem state. Empty toll set, and begin from system 0.
+        initial_state = ProblemState(0, set())
 
-        # Build initial problem state.
-        initial_state = ProblemState(0, set(mustHaveStations))
-        
-        # If already found a solution, return it.
-        if self.TestValid(initial_state):
-            self.best = len(initial_state.include_set)
-            return self.best
-        
         cur_system = initial_state.next_id
-        
-        # Skip over systems that are already in the include set
-        while cur_system < self.N and cur_system in initial_state.include_set:
-            initial_state.next_id += 1
-            cur_system = initial_state.next_id
-        
-        # Return the best solution found so far   
-        if cur_system >= self.N:
-            return self.best
-
-        # Try excluding the current system under consideration
-        exc_state = self.clone(initial_state)
-        exc_state.next_id += 1
-        self.IncludeSystem(exc_state, cur_system)
-        self.Branch(exc_state)
 
         # Try including the current system under consideration
+        inc_state = self.clone(initial_state)
+        inc_state.next_id += 1
+        self.IncludeSystem(inc_state, cur_system)
+        self.Branch(inc_state)
+
+        # Try excluding the current system under consideration
         initial_state.next_id += 1
         self.Branch(initial_state)
 
         return self.best
-    
+
     def Branch(self, state: ProblemState):
         # Current count of systems with stations
         num_stations = len(state.include_set)
@@ -162,7 +111,7 @@ class Solver:
         # Try excluding the current system under consideration (Polynomial time optimization)  #FIXME add comments
         state.next_id += 1
         best_inc = self.Branch(state)   
-        return min(best_inc, best_exc)
+        return min(best_exc, best_inc)
 
 
 if __name__ == "__main__":
@@ -176,24 +125,7 @@ if __name__ == "__main__":
     print(result)
     
     profiler.disable()
-    profiler.dump_stats("main.prof")  # Save stats for SnakeViz
+    profiler.dump_stats("include.prof")  # Save stats for SnakeViz
     
 # python3 main.py < input.txt
-# snakeviz main.prof
-
-# Required tasks:
-# Added backtracking
-# Added bounding
-# Profile code
-
-# Polynomial time optimization: Changed deepcopy to clone
-# SHOW: unoptimized.py vs deepcopy_optimized.py, deepcopy_benchmark.txt
-
-# Consider order of branching decisions: Changed the order of excluding first and then including
-# SHOW: include_first.py vs exclude_first.py, include.prof vs exclude.prof
-
-# Profile your code after making one or more change(s)
-# unoptimized.prof vs deepcopy.prof
-
-# Fast approximization algorithm to improve bounding
-# GreedyPreprocess method -> benchmark vs exclude_first.py
+# snakeviz profile_output.prof
