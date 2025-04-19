@@ -98,7 +98,8 @@ class Solver:
 
         # Try excluding the current system under consideration (Polynomial time optimization)  #FIXME add comments
         state.next_id += 1
-        best_exc = self.Branch(state)                    
+        exc_state = self.clone(state)
+        best_exc = self.Branch(exc_state)                    
     
         # Try including the current system under consideration
         inc_state = self.clone(state)                               # Polynomial time optimization) FIXME add comments          
@@ -131,5 +132,5 @@ if __name__ == "__main__":
 # Profile code
 
 # Polynomial time optimization: Changed deepcopy to clone
-# Polynomial time optimization: Changed the order of excluding first and then including
-#
+# Consider order of branching decisions: Changed the order of excluding first and then including
+# Profile your code after making one or more change(s)
